@@ -292,19 +292,19 @@ _io = [
         IOStandard("LVCMOS25")),
 
     # Dual and quad modes not supported by M25P128 memories
-    # ("spiflash4x", 0,
-    #     Subsignal("cs_n", Pins("U19")),
-    #     Subsignal("dq", Pins("P24 R25 R20 R21")),
-    #     IOStandard("LVCMOS25")
-    #  ),
-    #
-    # ("spiflash2x", 0,
-    #     Subsignal("cs_n", Pins("U19")),
-    #     Subsignal("dq", Pins("P24 R25")),
-    #     Subsignal("wp", Pins("R20")),
-    #     Subsignal("hold", Pins("R21")),
-    #     IOStandard("LVCMOS25")
-    # ),
+    ("spiflash4x", 0,
+        Subsignal("cs_n", Pins("U19")),
+        Subsignal("dq", Pins("P24 R25 R20 R21")),
+        IOStandard("LVCMOS25")
+     ),
+    
+    ("spiflash2x", 0,
+        Subsignal("cs_n", Pins("U19")),
+        Subsignal("dq", Pins("P24 R25")),
+        Subsignal("wp", Pins("R20")),
+        Subsignal("hold", Pins("R21")),
+        IOStandard("LVCMOS25")
+    ),
 
     ("spiflash1x", 0,
         Subsignal("cs_n", Pins("U19")),
