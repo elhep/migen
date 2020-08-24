@@ -608,6 +608,7 @@ _connectors = [
         "HB20_P": "Y19",
         "HB21_N": "AB18",
         "HB21_P": "AA18",
+        
         "LA00_CC_N": "AF28",
         "LA00_CC_P": "AE28",
         "LA01_CC_N": "AD28",
