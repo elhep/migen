@@ -2,22 +2,26 @@ import os
 import shutil
 
 from migen.build.generic_platform import GenericPlatform
-from migen.build.xilinx import common, vivado, ise, symbiflow
+from migen.build.quicklogic import quicklogic
 
-
-class XilinxPlatform(GenericPlatform):
+class QuicklogicPlatform(GenericPlatform):
     bitstream_ext = ".bit"
 
-    def __init__(self, *args, toolchain="ise", **kwargs):
+    def __init__(self, *args, toolchain="quicklogic", **kwargs):
         GenericPlatform.__init__(self, *args, **kwargs)
         self.edifs = set()
         self.ips = set()
-        if toolchain == "ise":
-            self.toolchain = ise.XilinxISEToolchain()
-        elif toolchain == "vivado":
-            self.toolchain = vivado.XilinxVivadoToolchain()
-        elif toolchain == "symbiflow":
-            self.toolchain = symbiflow.SymbiflowToolchain()
+
+        self.board_type = "ql-eos-s3_wlcsp"
+        if self.device == "chandalar":
+            self.part = "PD64"
+        elif self.device == "quickfeather":
+            self.part = "PU64"
+        else:
+            raise ValueError("Unknown device")
+
+        if toolchain == "quicklogic":
+            self.toolchain = quicklogic.QuicklogicToolchain()
         else:
             raise ValueError("Unknown toolchain")
 
@@ -41,19 +45,11 @@ class XilinxPlatform(GenericPlatform):
         return copied_ips
 
     def get_verilog(self, *args, special_overrides=dict(), **kwargs):
-        so = dict(common.xilinx_special_overrides)
-        if self.device[:3] == "xc6":
-            so.update(common.xilinx_s6_special_overrides)
-        if self.device[:3] == "xc7":
-            so.update(common.xilinx_s7_special_overrides)
-        if self.device[:4] == "xcku":
-            so.update(common.xilinx_ku_special_overrides)
-        so.update(special_overrides)
         return GenericPlatform.get_verilog(self, *args,
-            special_overrides=so, attr_translate=self.toolchain.attr_translate, **kwargs)
+            attr_translate=self.toolchain.attr_translate, **kwargs)
 
     def get_edif(self, fragment, **kwargs):
-        return GenericPlatform.get_edif(self, fragment, "UNISIMS", "Xilinx", self.device, **kwargs)
+        return GenericPlatform.get_edif(self, fragment, "UNISIMS", "Quicklogic", self.device, **kwargs)
 
     def build(self, *args, **kwargs):
         return self.toolchain.build(self, *args, **kwargs)
@@ -71,6 +67,4 @@ class XilinxPlatform(GenericPlatform):
         self.toolchain.add_false_path_constraint(self, from_, to)
 
     def do_finalize(self, fragment, *args, **kwargs):
-        # Do not create period constraint directly on default clock when using Symbiflow
-        if not isinstance(self.toolchain, symbiflow.SymbiflowToolchain):
-            super().do_finalize(fragment, *args, **kwargs)
+        super().do_finalize(fragment, *args, **kwargs)

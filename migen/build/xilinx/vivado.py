@@ -31,7 +31,7 @@ def _format_xdc(signame, resname, *constraints):
         fmt_r += "." + resname[2]
     r = " ## {}\n".format(fmt_r)
     for c in fmt_c:
-        r += c + " [get_ports " + signame + "]\n"
+        r += c + " [get_ports {" + signame + "}]\n"
     return r
 
 
@@ -89,11 +89,12 @@ class XilinxVivadoToolchain:
         self.clocks = dict()
         self.false_paths = set()
 
-    def _build_batch(self, platform, sources, edifs, ips, build_name):
+    def _build_batch(self, platform, sources, edifs, ips, build_name, build_dir):
+        # script for step 1: place and route
         tcl = []
         tcl.append("create_project -force -name {} -part {}".format(build_name, platform.device))
         tcl.append("set_property XPM_LIBRARIES {XPM_CDC XPM_MEMORY} [current_project]")
-        for filename, language, library in sources:
+        for filename, language, library in sorted(sources, key=lambda x: x[0]):
             filename_tcl = "{" + filename + "}"
             tcl.append("add_files " + filename_tcl)
             tcl.append("set_property library {} [get_files {}]"
@@ -114,11 +115,7 @@ class XilinxVivadoToolchain:
 
         tcl.append("read_xdc {}.xdc".format(build_name))
         tcl.extend(c.format(build_name=build_name) for c in self.pre_synthesis_commands)
-        # "-include_dirs {}" crashes Vivado 2016.4
-        if platform.verilog_include_paths:
-            tcl.append("synth_design -top {} -part {} -include_dirs {{{}}}".format(build_name, platform.device, " ".join(platform.verilog_include_paths)))
-        else:
-            tcl.append("synth_design -top {} -part {}".format(build_name, platform.device))
+        tcl.append("synth_design -top {} -part {}".format(build_name, platform.device))
         tcl.append("report_timing_summary -file {}_timing_synth.rpt".format(build_name))
         tcl.append("report_utilization -hierarchical -file {}_utilization_hierarchical_synth.rpt".format(build_name))
         tcl.append("report_utilization -file {}_utilization_synth.rpt".format(build_name))
@@ -141,12 +138,22 @@ class XilinxVivadoToolchain:
         tcl.append("report_drc -file {}_drc.rpt".format(build_name))
         tcl.append("report_timing_summary -datasheet -max_paths 10 -file {}_timing.rpt".format(build_name))
         tcl.append("report_power -file {}_power.rpt".format(build_name))
+        tools.write_to_file(build_name + "_route.tcl", "\n".join(tcl))
+
+        # script for step 2: bitstream
+        tcl = []
         for bitstream_command in self.bitstream_commands:
             tcl.append(bitstream_command.format(build_name=build_name))
         tcl.append("write_bitstream -force {}.bit ".format(build_name))
         for additional_command in self.additional_commands:
             tcl.append(additional_command.format(build_name=build_name))
         tcl.append("quit")
+        tools.write_to_file(build_name + "_bitstream.tcl", "\n".join(tcl))
+
+        # script that calls above steps
+        tcl = []
+        tcl.append("source \"{}_route.tcl\"".format(build_name))
+        tcl.append("source \"{}_bitstream.tcl\"".format(build_name))
         tools.write_to_file(build_name + ".tcl", "\n".join(tcl))
 
     def _convert_clocks(self, platform):
@@ -205,10 +212,10 @@ class XilinxVivadoToolchain:
         named_sc, named_pc = platform.resolve_signals(v_output.ns)
         v_file = build_name + ".v"
         v_output.write(v_file)
-        sources = platform.sources | {(v_file, "verilog", "work")}
+        sources = platform.copy_sources(build_dir) | {(v_file, "verilog", "work")}
         edifs = platform.edifs
-        ips = platform.ips
-        self._build_batch(platform, sources, edifs, ips, build_name)
+        ips = platform.copy_ips(build_dir)
+        self._build_batch(platform, sources, edifs, ips, build_name, build_dir)
         tools.write_to_file(build_name + ".xdc", _build_xdc(named_sc, named_pc))
         if run:
             _run_vivado(build_name)

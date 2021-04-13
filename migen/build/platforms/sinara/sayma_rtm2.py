@@ -72,7 +72,7 @@ _io = [
 
     ("filtered_clk_sel", 0, Pins("M5"), IOStandard("LVCMOS25")),
     ("si5324", 0,
-        Subsignal("rst_n", Pins("C14"), IOStandard("LVCMOS25")),
+        Subsignal("rst_n", Pins("L5"), IOStandard("LVCMOS25")),
         Subsignal("int", Pins("V6"), IOStandard("LVCMOS25"))
     ),
     ("si5324_clkin", 0,
@@ -89,6 +89,21 @@ _io = [
         Subsignal("n", Pins("R1")),
         IOStandard("LVDS_25"), Misc("DIFF_TERM=TRUE")
     ),
+    ("ddmtd_main_dcxo_oe", 0, Pins("N6"), IOStandard("LVCMOS25")),
+    ("ddmtd_main_dcxo_i2c", 0,
+        Subsignal("scl", Pins("P14")),
+        Subsignal("sda", Pins("U15")),
+        IOStandard("LVCMOS33")),
+    ("ddmtd_helper_dcxo_oe", 0, Pins("M6"), IOStandard("LVCMOS25")),
+    ("ddmtd_helper_dcxo_i2c", 0,
+        Subsignal("scl", Pins("T15")),
+        Subsignal("sda", Pins("R16")),
+        IOStandard("LVCMOS33")),
+    ("ddmtd_helper_clk", 0,
+        Subsignal("p", Pins("N3")),
+        Subsignal("n", Pins("N2")),
+        IOStandard("LVDS_25"), Misc("DIFF_TERM=TRUE")
+    ),
     ("rtm_amc_link", 0,
         Subsignal("txp", Pins("H2")),
         Subsignal("txn", Pins("H1")),
@@ -103,9 +118,67 @@ _io = [
         Subsignal("rxn", Pins("G3"))
     ),
 
-    # Bogus AFE pins for testing (TODO)
-    ("allaki0_rfsw0", 0, Pins("E18"), IOStandard("LVCMOS25")),
-    ("allaki0_rfsw1", 0, Pins("F17"), IOStandard("LVCMOS25")),
+    # NOTE: AFE pins here are numbered after DAC channels and NOT signal indices
+    # See: https://github.com/sinara-hw/BaseMod/issues/29
+    # AFE0 pins
+    ("basemod0_rfsw", 0, Pins("U16"), IOStandard("LVCMOS33")),
+    ("basemod0_rfsw", 1, Pins("U14"), IOStandard("LVCMOS33")),
+    ("basemod0_rfsw", 2, Pins("V14"), IOStandard("LVCMOS33")),
+    ("basemod0_rfsw", 3, Pins("V12"), IOStandard("LVCMOS33")),
+    ("basemod0_att", 0,
+        Subsignal("le", Pins("V17")),
+        Subsignal("miso", Pins("V13 V9 U11 U9")),
+        Subsignal("mosi", Pins("R13 T12 U12 V11")),
+        Subsignal("clk", Pins("V16")),
+        Subsignal("rst_n", Pins("T13")),
+        IOStandard("LVCMOS33")
+    ),
+
+    # AFE0 ADC amp
+    ("basemod0_adc_amp_a0", 0, Pins("H16"), IOStandard("LVCMOS25")),
+    ("basemod0_adc_amp_a0", 1, Pins("C17"), IOStandard("LVCMOS25")),
+    ("basemod0_adc_amp_a0", 2, Pins("E17"), IOStandard("LVCMOS25")),
+    ("basemod0_adc_amp_a0", 3, Pins("G14"), IOStandard("LVCMOS25")),
+    ("basemod0_adc_amp_a1", 0, Pins("G16"), IOStandard("LVCMOS25")),
+    ("basemod0_adc_amp_a1", 1, Pins("C18"), IOStandard("LVCMOS25")),
+    ("basemod0_adc_amp_a1", 2, Pins("D18"), IOStandard("LVCMOS25")),
+    ("basemod0_adc_amp_a1", 3, Pins("F14"), IOStandard("LVCMOS25")),
+
+    # AFE1 pins
+    ("basemod1_rfsw", 0, Pins("J16"), IOStandard("LVCMOS33")),
+    ("basemod1_rfsw", 1, Pins("K15"), IOStandard("LVCMOS33")),
+    ("basemod1_rfsw", 2, Pins("L15"), IOStandard("LVCMOS33")),
+    ("basemod1_rfsw", 3, Pins("M15"), IOStandard("LVCMOS33")),
+    ("basemod1_att", 0,
+        Subsignal("le", Pins("K17")),
+        Subsignal("miso", Pins("M16 N18 N14 N17")),
+        Subsignal("mosi", Pins("L18 M17 M14 N16")),
+        Subsignal("clk", Pins("K18")),
+        Subsignal("rst_n", Pins("J14")),
+        IOStandard("LVCMOS33")
+    ),
+
+    # AFE1 ADC amp
+    ("basemod1_adc_amp_a0", 0, Pins("D8"), IOStandard("LVCMOS25")),
+    ("basemod1_adc_amp_a0", 1, Pins("D9"), IOStandard("LVCMOS25")),
+    ("basemod1_adc_amp_a0", 2, Pins("B9"), IOStandard("LVCMOS25")),
+    ("basemod1_adc_amp_a0", 3, Pins("C11"), IOStandard("LVCMOS25")),
+    ("basemod1_adc_amp_a1", 0, Pins("C8"), IOStandard("LVCMOS25")),
+    ("basemod1_adc_amp_a1", 1, Pins("C9"), IOStandard("LVCMOS25")),
+    ("basemod1_adc_amp_a1", 2, Pins("A9"), IOStandard("LVCMOS25")),
+    ("basemod1_adc_amp_a1", 3, Pins("B11"), IOStandard("LVCMOS25")),
+
+    # Header I/O
+    ("header_gpio", 0, Pins("B17"), IOStandard("LVCMOS25")),
+    ("header_gpio", 1, Pins("C16"), IOStandard("LVCMOS25")),
+    ("header_gpio", 2, Pins("A17"), IOStandard("LVCMOS25")),
+    ("header_gpio", 3, Pins("B16"), IOStandard("LVCMOS25")),
+    ("header_gpio", 4, Pins("D16"), IOStandard("LVCMOS25")),
+    ("header_gpio", 5, Pins("E16"), IOStandard("LVCMOS25")),
+    ("header_gpio", 6, Pins("A15"), IOStandard("LVCMOS25")),
+    ("header_gpio", 7, Pins("B14"), IOStandard("LVCMOS25")),
+    ("header_gpio", 8, Pins("C13"), IOStandard("LVCMOS25")),
+    ("header_gpio", 9, Pins("D13"), IOStandard("LVCMOS25")),
 ]
 
 class Platform(XilinxPlatform):

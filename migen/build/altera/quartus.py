@@ -68,7 +68,7 @@ def _build_qsf(named_sc, named_pc):
     return "\n".join(lines)
 
 
-def _build_files(device, sources, vincpaths, named_sc, named_pc, build_name):
+def _build_files(device, sources, named_sc, named_pc, build_name):
     lines = []
     for filename, language, library in sources:
         # Enforce use of SystemVerilog
@@ -81,10 +81,6 @@ def _build_files(device, sources, vincpaths, named_sc, named_pc, build_name):
                 lang=language.upper(),
                 path=filename.replace("\\", "/"),
                 lib=library))
-
-    for path in vincpaths:
-        lines.append("set_global_assignment -name SEARCH_PATH {}".format(
-            path.replace("\\", "/")))
 
     lines.append(_build_qsf(named_sc, named_pc))
     lines.append("set_global_assignment -name DEVICE {}".format(device))
@@ -134,10 +130,9 @@ class AlteraQuartusToolchain:
         named_sc, named_pc = platform.resolve_signals(v_output.ns)
         v_file = build_name + ".v"
         v_output.write(v_file)
-        sources = platform.sources | {(v_file, "verilog", "work")}
+        sources = platform.copy_sources(build_dir) | {(v_file, "verilog", "work")}
         _build_files(platform.device,
                      sources,
-                     platform.verilog_include_paths,
                      named_sc,
                      named_pc,
                      build_name)

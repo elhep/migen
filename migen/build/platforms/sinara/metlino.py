@@ -74,8 +74,8 @@ _io = [
     ),
 
     ("gth_clk200", 0,
-        Subsignal("p", Pins("T6")),
-        Subsignal("n", Pins("T5"))
+        Subsignal("p", Pins("K6")),
+        Subsignal("n", Pins("K5"))
     ),
     ("port0", 0,
         Subsignal("txp", Pins("B6")),
@@ -83,7 +83,64 @@ _io = [
         Subsignal("rxp", Pins("A4")),
         Subsignal("rxn", Pins("A3"))
     ),
+    ("sfp", 0,
+        Subsignal("txp", Pins("D6")),
+        Subsignal("txn", Pins("D5")),
+        Subsignal("rxp", Pins("D2")),
+        Subsignal("rxn", Pins("D1"))
+    ),
+    ("sfp", 1,
+        Subsignal("txp", Pins("C4")),
+        Subsignal("txn", Pins("C3")),
+        Subsignal("rxp", Pins("B2")),
+        Subsignal("rxn", Pins("B1"))
+    ),
+    ("sfp", 2,
+        Subsignal("txp", Pins("F6")),
+        Subsignal("txn", Pins("F5")),
+        Subsignal("rxp", Pins("E4")),
+        Subsignal("rxn", Pins("E3"))
+    ),
 
+    ("sfp_ctl", 0,
+        Subsignal("mod_def0", Pins("K27")),
+        Subsignal("mod_def1", Pins("G25")),
+        Subsignal("mod_def2", Pins("H26")),
+        Subsignal("los", Pins("K26")),
+        Subsignal("rate_select", Pins("H23")),
+        Subsignal("tx_disable", Pins("H27")),
+        Subsignal("tx_fault", Pins("G27")),
+        Subsignal("led1", Pins("J24")),
+        Subsignal("led2", Pins("J25")),
+        IOStandard("LVCMOS33")
+    ),
+    ("sfp_ctl", 1,
+        Subsignal("mod_def0", Pins("L24")),
+        Subsignal("mod_def1", Pins("M27")),
+        Subsignal("mod_def2", Pins("L27")),
+        Subsignal("los", Pins("L23")),
+        Subsignal("rate_select", Pins("J23")),
+        Subsignal("tx_disable", Pins("H24")),
+        Subsignal("tx_fault", Pins("J26")),
+        Subsignal("led1", Pins("K25")),
+        Subsignal("led2", Pins("L25")),
+        IOStandard("LVCMOS33")
+    ),
+    ("sfp_ctl", 2,
+        Subsignal("mod_def0", Pins("N26")),
+        Subsignal("mod_def1", Pins("M24")),
+        Subsignal("mod_def2", Pins("L22")),
+        Subsignal("los", Pins("N23")),
+        Subsignal("rate_select", Pins("K23")),
+        Subsignal("tx_disable", Pins("N27")),
+        Subsignal("tx_fault", Pins("P26")),
+        Subsignal("led1", Pins("M26")),
+        Subsignal("led2", Pins("M25")),
+        IOStandard("LVCMOS33")
+    ),
+
+    ("input_clk_sel", 0, Pins("AK11"), IOStandard("LVCMOS33")),
+    ("filtered_clk_sel", 0, Pins("AN12"), IOStandard("LVCMOS33")),
     ("si5324", 0,
         Subsignal("rst_n", Pins("AL13"), IOStandard("LVCMOS33")),
         Subsignal("int", Pins("AK13"), IOStandard("LVCMOS33"))
@@ -163,6 +220,22 @@ _io = [
         Subsignal("txn", Pins("R3")),
         Subsignal("rxp", Pins("P2")),
         Subsignal("rxn", Pins("P1"))
+    ),
+
+    ("ddmtd_main_dcxo_oe", 0, Pins("AM11"), IOStandard("LVCMOS33")),
+    ("ddmtd_main_dcxo_i2c", 0,
+        Subsignal("scl", Pins("AN11")),
+        Subsignal("sda", Pins("AN13")),
+        IOStandard("LVCMOS33")),
+    ("ddmtd_helper_dcxo_oe", 0, Pins("AK12"), IOStandard("LVCMOS33")),
+    ("ddmtd_helper_dcxo_i2c", 0,
+        Subsignal("scl", Pins("AL12")),
+        Subsignal("sda", Pins("AM12")),
+        IOStandard("LVCMOS33")),
+    ("ddmtd_helper_clk", 0,
+        Subsignal("p", Pins("E18")),
+        Subsignal("n", Pins("E17")),
+        IOStandard("LVDS"), Misc("DIFF_TERM_ADV=TERM_100")
     ),
 ]
 
